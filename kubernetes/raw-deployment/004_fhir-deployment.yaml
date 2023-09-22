@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fhir-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fhir-server
+  template:
+    metadata:
+      labels:
+        app: fhir-server
+    spec:
+      containers:
+        - name: fhir-server
+          image: localhost:5000/custom-fhir # may change to other registry
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8081
+              protocol: TCP
+
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://10.108.40.94:5432/idea4rc #may change to other internal ip
+            - name: SPRING_DATASOURCE_USERNAME
+              value: admin
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: admin
+            - name: SPRING_DATASOURCE_DRIVERCLASSNAME
+              value: org.postgresql.Driver
+            - name: spring.jpa.properties.hibernate.dialect
+              value: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
+            - name: HAPI_FHIR_USE_APACHE_ADDRESS_STRATEGY
+              value: "true"
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ADD_ADDITIONAL_PATHS
+              value: "true"
+            - name: MANAGEMENT_SERVER_PORT
+              value: "8081"
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+            - mountPath: /app/target
+              name: lucenefiles-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: lucenefiles-volume
+          emptyDir: {}

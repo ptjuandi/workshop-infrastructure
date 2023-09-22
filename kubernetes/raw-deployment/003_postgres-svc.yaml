@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fhir-service
+spec:
+  selector:
+    app: fhir-server
+  ports:
+    - protocol: TCP
+      port: 5432 
+      targetPort: 5432
+  type: ClusterIP
+  # type: ExternalName
+  # externalName: my.database.example.com
