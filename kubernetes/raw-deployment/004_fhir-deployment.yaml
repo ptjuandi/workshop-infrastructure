@@ -26,11 +26,17 @@ spec:
 
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://10.108.40.94:5432/idea4rc #may change to other internal ip
+              value: jdbc:postgresql://fhir-service.namespace.svc.cluster.local:5432/idea4rc #may change to other internal ip
             - name: SPRING_DATASOURCE_USERNAME
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
             - name: SPRING_DATASOURCE_PASSWORD
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
             - name: SPRING_DATASOURCE_DRIVERCLASSNAME
               value: org.postgresql.Driver
             - name: spring.jpa.properties.hibernate.dialect
