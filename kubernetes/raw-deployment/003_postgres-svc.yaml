@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fhir-service
+  name: postgres-db
 spec:
   selector:
-    app: fhir-server
+    app: postgres-db
   ports:
     - protocol: TCP
       port: 5432 
