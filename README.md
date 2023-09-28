@@ -1,5 +1,7 @@
 # WORKSHOP INSTRUCUTIONS
 
+The main goal is to guide through
+
 ## Table of contents
 
 - [WORKSHOP INSTRUCUTIONS](#workshop-instrucutions)
@@ -10,7 +12,9 @@
     - [Mesh deployment (Istio)](#mesh-deployment-istio)
         - [Test](#test-mesh)
         - [Clean up](#clean-up-mesh)
-    - [Accessing the Mesh](#accessing-the-mesh)
+    - [Securing the Mesh (mTLS)](#securing-the-mesh-mtls)
+        - [Test](#test-mesh)
+        - [Clean up](#clean-up-mesh)
 
 ## Before you start
 
@@ -154,27 +158,59 @@ kubectl apply -f kubernetes/mesh-deployment/004_fhir-server-vs.yaml
 
 ### Test mesh 
 
+In order to test the istio injection use:
+
+```shell
+kubectl get namespace -L istio-injection
+```
+The result should look like this since we enabled injection in the default name space
+
+```shell
+NAME              STATUS   AGE    ISTIO-INJECTION
+default           Active   x      enabled
+istio-system      Active   x    
+kube-node-lease   Active   x   
+kube-public       Active   x   
+kube-system       Active   x   
+```
+
 Using Kiali as an observability tool makes it simple to understand the capsule concept and the conexions between services
 
 - To run it use the following command that opens a dashboard in the web browser
 ```shell
 istioctl dashboard kiali
 ```
-- In order to test the istio injection use:
+The result should show something like this in the __Graph__ section of the dashboard.
 
-```shell
-kubectl get namespace -L istio-injection
-```
+![Istio mesh](./doc/img/exposed-fhir-service.png)
 
 ### Clean up mesh
 
 - To completly remove the services and the Istio installation follow the next steps
 
 ```shell
+kubectl delete -f kubernetes/raw-deployment/004_fhir-deployment.yaml
+
+kubectl delete -f kubernetes/raw-deployment/002_postgres-db.yaml
+
+kubectl delete -f kubernetes/raw-deployment/003_postgres-svc.yaml
+
+kubectl delete -f kubernetes/raw-deployment/001_postgress-secret.yaml
+
 istioctl uninstall --purge -y
 
 kubectl delete namespace istio-system
 ```
 
-## Accesing the Mesh 
+## Securing the Mesh (mTLS)
 
+For the next step we'll implement the secure comunication between services in the mesh using mTLS
+
+The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
+
+```shell
+kubectl apply -f kubernetes/mTLS/001_datamesh-ns.yaml
+```
+
+
+## Least privilege access 
