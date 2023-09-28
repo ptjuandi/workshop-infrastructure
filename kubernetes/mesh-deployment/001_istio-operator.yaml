@@ -10,5 +10,8 @@ spec:
         enableTracing: true
   components:
     egressGateways:
-    - name: idea4rc-egressgateway
+    - name: idea4rc-egress
+      enabled: true
+    ingressGateways:
+    - name: idea4rc-ingress
       enabled: true
