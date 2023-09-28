@@ -27,7 +27,7 @@ spec:
 
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgres-db.default.svc.cluster.local:5432/idea4rc #may change to other internal ip
+              value: jdbc:postgresql://postgres-db.datamesh.svc.cluster.local:5432/idea4rc #may change to other internal ip
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:

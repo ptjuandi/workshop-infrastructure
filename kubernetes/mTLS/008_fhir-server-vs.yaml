@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: fhir-server
+  namespace: datamesh
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - idea-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    rewrite:
+        uri: "/"
+    route:
+    - destination:
+        host: fhir-service.datamesh.svc.cluster.local
+        port:
+          number: 8080
