@@ -1,6 +1,6 @@
 # WORKSHOP INSTRUCUTIONS
 
-The main goal is to guide through
+The main goal is to guide through a servioce mesh enforcing a zero trust network with authentication policies.
 
 ## Table of contents
 
@@ -13,8 +13,11 @@ The main goal is to guide through
         - [Test](#test-mesh)
         - [Clean up](#clean-up-mesh)
     - [Securing the Mesh (mTLS)](#securing-the-mesh-mtls)
-        - [Test](#test-mesh)
-        - [Clean up](#clean-up-mesh)
+        - [Test](#testing-the-mtls-mesh)
+        - [Clean up](#cleaning-up-mtls)
+    - [Least privilege access](#least-privilege-access)
+        - [Test](#)
+        - [Clean up](#)
 
 ## Before you start
 
@@ -205,12 +208,77 @@ kubectl delete namespace istio-system
 ## Securing the Mesh (mTLS)
 
 For the next step we'll implement the secure comunication between services in the mesh using mTLS
+After seting up Istio the same way that it's explained in the previous step and activating the proxy injection:
 
-The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
+- The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
 
 ```shell
 kubectl apply -f kubernetes/mTLS/001_datamesh-ns.yaml
 ```
+- Now we enforce the mTLS policy along the namespace we just created
 
+```shell 
+kubectl apply -f kubernetes/mTLS/002_mtls-policy.yaml
+```
+- Then we apply the rest of the yamls from the previous steps but with the namespace "datamesh"
+```shell
+kubectl apply -f kubernetes/mTLS/003_gateway.yaml
+
+kubectl apply -f kubernetes/mTLS/004_postgress-secret-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/005_postgres-db-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/006_postgres-svc-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/007_fhir-deployment-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/008_fhir-server-svc.yaml
+
+kubectl apply -f kubernetes/mTLS/009_fhir-server-vs.yaml
+
+```
+
+### Testing the mTLS mesh
+
+- For testing purposes we can install Prometheus and Kiali and check the mTLS connections between services
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+```
+
+By applying the "STRICT" tag in the Istio [PeerAuthentication](./kubernetes/mTLS/002_mtls-policy.yaml) we don't allow any traffic inside the mesh that is not encrypted and we enable mTLS between services as we can see in the Kiali
+
+![Kiali mTLS](./doc/img/kiali-mtls.png)
+
+### Cleaning up mTLS
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+
+kubectl apply -f kubernetes/mTLS/003_gateway.yaml
+
+kubectl apply -f kubernetes/mTLS/004_postgress-secret-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/005_postgres-db-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/006_postgres-svc-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/007_fhir-deployment-datamesh.yaml
+
+kubectl apply -f kubernetes/mTLS/008_fhir-server-svc.yaml
+
+kubectl apply -f kubernetes/mTLS/009_fhir-server-vs.yaml
+
+kubectl apply -f kubernetes/mTLS/002_mtls-policy.yaml
+
+kubectl apply -f kubernetes/mTLS/001_datamesh-ns.yaml
+
+istioctl uninstall --purge -y
+
+kubectl delete namespace istio-system
+```
 
 ## Least privilege access 
