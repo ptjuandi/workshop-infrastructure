@@ -210,8 +210,12 @@ kubectl delete namespace istio-system
 For the next step we'll implement the secure comunication between services in the mesh using mTLS
 After seting up Istio the same way that it's explained in the previous step and activating the proxy injection:
 
-- The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
+- Install Istio as in the previous steps
 
+```shell
+istioctl apply -f kubernetes/mesh-deployment/001_istio-operator.yaml -y
+```
+- The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
 ```shell
 kubectl apply -f kubernetes/mTLS/001_datamesh-ns.yaml
 ```
@@ -251,6 +255,19 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samp
 By applying the "STRICT" tag in the Istio [PeerAuthentication](./kubernetes/mTLS/002_mtls-policy.yaml) we don't allow any traffic inside the mesh that is not encrypted and we enable mTLS between services as we can see in the Kiali
 
 ![Kiali mTLS](./doc/img/kiali-mtls.png)
+
+Now we'll prove that, enforcinf the STRICT mTLS mode, no other service outside the namespace or inside withouth a sidecar injection is able to comunicate with the FHIR service or it's database.
+
+- First we apply the sleep pod in the default namespace 
+```shell
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/sleep/sleep.yaml -n default
+```
+- Then we can curl to the services in the __datamesh__ namespace
+```shell
+kubectl exec "$(kubectl get pod -l app=sleep -n default -o jsonpath={.items..metadata.name})" -c sleep -n default -- curl fhir-service.datamesh.svc.cluster.local -s -o /dev/null -w "%{http_code}\n"
+
+#It will time out since it can not see the services from other namespaces
+```
 
 ### Cleaning up mTLS
 ```shell

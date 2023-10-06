@@ -1,0 +1,18 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: fhir-access
+  namespace: datamesh
+spec:
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals: ["ingress-gateway.istio-system.svc.cluster.local"]
+    to:
+    - operation:
+        methods: ["*"]
+        paths: ["/fhir/*"]
+    when:
+    - key: request.auth.claims[iss]
+      values: ["https://fosps.gravitatehealth.eu/auth/realms/GravitateHealth"]
