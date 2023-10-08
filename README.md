@@ -271,27 +271,27 @@ kubectl exec "$(kubectl get pod -l app=sleep -n default -o jsonpath={.items..met
 
 ### Cleaning up mTLS
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
 
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
 
-kubectl apply -f kubernetes/mTLS/003_gateway.yaml
+kubectl delete -f kubernetes/mTLS/003_gateway.yaml
 
-kubectl apply -f kubernetes/mTLS/004_postgress-secret-datamesh.yaml
+kubectl delete -f kubernetes/mTLS/004_postgress-secret-datamesh.yaml
 
-kubectl apply -f kubernetes/mTLS/005_postgres-db-datamesh.yaml
+kubectl delete -f kubernetes/mTLS/005_postgres-db-datamesh.yaml
 
-kubectl apply -f kubernetes/mTLS/006_postgres-svc-datamesh.yaml
+kubectl delete -f kubernetes/mTLS/006_postgres-svc-datamesh.yaml
 
-kubectl apply -f kubernetes/mTLS/007_fhir-deployment-datamesh.yaml
+kubectl delete -f kubernetes/mTLS/007_fhir-deployment-datamesh.yaml
 
-kubectl apply -f kubernetes/mTLS/008_fhir-server-svc.yaml
+kubectl delete -f kubernetes/mTLS/008_fhir-server-svc.yaml
 
-kubectl apply -f kubernetes/mTLS/009_fhir-server-vs.yaml
+kubectl delete -f kubernetes/mTLS/009_fhir-server-vs.yaml
 
-kubectl apply -f kubernetes/mTLS/002_mtls-policy.yaml
+kubectl delete -f kubernetes/mTLS/002_mtls-policy.yaml
 
-kubectl apply -f kubernetes/mTLS/001_datamesh-ns.yaml
+kubectl delete -f kubernetes/mTLS/001_datamesh-ns.yaml
 
 istioctl uninstall --purge -y
 
