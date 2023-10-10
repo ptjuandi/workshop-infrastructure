@@ -268,9 +268,17 @@ kubectl exec "$(kubectl get pod -l app=sleep -n default -o jsonpath={.items..met
 
 #It will time out since it can not see the services from other namespaces
 ```
+- It can be seen in the Kiali dashboard as external agent that comes from the default ns trying to access a service that doesnt exists
+
+![404](./doc/img/404.png)
 
 ### Cleaning up mTLS
 ```shell
+# If you deployed the sleep pod it can be removed by:
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/sleep/sleep.yaml -n default
+
+###
+
 kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
 
 kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
@@ -299,3 +307,18 @@ kubectl delete namespace istio-system
 ```
 
 ## Least privilege access 
+
+For this step we assume that there is an authentication provicer that allows JWT such as Keycloak.
+
+For the example I'm going to use [keycloak.idea.lst.tfo.upm.es](https://keycloak.idea.lst.tfo.upm.es/) hosted by LST for the IDEA4RC project. 
+
+It contains a realm called IDEA4RC with 2 roles and 2 users as example
+
+
+| User    | Role    | Allowed methods |
+|---------|---------| --------------- |
+| Bob     | Medic   | POST            |
+| Alice   | Patient | GET             |
+
+First step to implement the authorization is to follow the steps from [Securing the Mesh (mTLS)](#securing-the-mesh-mtls) to set up the mesh and the services.
+
