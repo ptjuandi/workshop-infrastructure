@@ -1,12 +1,12 @@
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
-metadata: 
+metadata:
   name: fhir-access
   namespace: datamesh
 spec:
   selector:
     matchLabels:
-      app: med-info
+      app: fhir-server
   jwtRules:
-  - issuer: https://fosps.gravitatehealth.eu/auth/realms/GravitateHealth
-    jwksUri: https://fosps.gravitatehealth.eu/auth/realms/GravitateHealth/protocol/openid-connect/certs
+  - issuer: https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC
+    jwksUri: https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/certs

@@ -16,8 +16,8 @@ The main goal is to guide through a servioce mesh enforcing a zero trust network
         - [Test](#testing-the-mtls-mesh)
         - [Clean up](#cleaning-up-mtls)
     - [Least privilege access](#least-privilege-access)
-        - [Test](#)
-        - [Clean up](#)
+        - [Test](#testing-auth)
+        - [Clean up](#cleaning-up-auth)
 
 ## Before you start
 
@@ -315,10 +315,99 @@ For the example I'm going to use [keycloak.idea.lst.tfo.upm.es](https://keycloak
 It contains a realm called IDEA4RC with 2 roles and 2 users as example
 
 
-| User    | Role    | Allowed methods |
-|---------|---------| --------------- |
-| Bob     | Medic   | POST            |
-| Alice   | Patient | GET             |
+| User    | Password   | Role    | Allowed methods |
+|---------|----------- |-------- | --------------- |
+| Bob     | bob1234!   | Medic   | POST            |
+| Alice   | alice1234! | Patient | GET             |
 
 First step to implement the authorization is to follow the steps from [Securing the Mesh (mTLS)](#securing-the-mesh-mtls) to set up the mesh and the services.
 
+- Then we need to set up a service to request auth based on a issuer and a jwksUri that comes from the keycloak
+
+```shell
+kubectl apply -f kubernetes/least-privilege-access/001_request-auth.yaml
+```
+
+- Then the policies for accesing the FHIR service must be created following the table above
+
+```shell
+kubectl apply -f kubernetes/least-privilege-access/002_auth-policy-medic.yaml
+
+kubectl apply -f kubernetes/least-privilege-access/003_auth-policy-patient.yaml
+```
+
+### Testing auth
+
+In order to test the users trying to access the fhir endpoint on specific HTTP method we first need to login and get the jwt that contains the assigned role for the users accessing the services.
+
+- Logging in with the Patient (Alice)
+
+```shell
+    curl --location 'https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token' \
+         --header 'Content-Type: application/x-www-form-urlencoded' \
+         --data-urlencode 'client_id=Istio' \
+         --data-urlencode 'grant_type=password' \
+         --data-urlencode 'username=alice' \
+         --data-urlencode 'password=alice1234!'
+```
+- With the token that it returns you can now use it to GET in the FHIR service. In this example we get the resouces 'Patient' in the server
+
+```shell
+curl --location 'http://127.0.0.1/fhir/Patient' \
+--header 'Authorization: Bearer <token>'
+```
+
+- To test the other method (POST) with Bob we'll follow the same methodology
+
+```shell
+curl --location 'https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token' \
+         --header 'Content-Type: application/x-www-form-urlencoded' \
+         --data-urlencode 'client_id=Istio' \
+         --data-urlencode 'grant_type=password' \
+         --data-urlencode 'username=bob' \
+         --data-urlencode 'password=bob1234!'
+
+curl --location --request POST 'http://127.0.0.1/fhir/Patient' \
+--header 'Authorization: Bearer <token>'
+```
+
+
+### Cleaning up auth
+
+```shell
+kubectl delete -f kubernetes/least-privilege-access/001_request-auth.yaml
+
+kubectl delete -f kubernetes/least-privilege-access/002_auth-policy-medic.yaml
+
+kubectl delete -f kubernetes/least-privilege-access/003_auth-policy-patient.yaml
+
+# If you deployed the sleep pod it can be removed by:
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/sleep/sleep.yaml -n default
+
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
+
+kubectl delete -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+
+kubectl delete -f kubernetes/mTLS/003_gateway.yaml
+
+kubectl delete -f kubernetes/mTLS/004_postgress-secret-datamesh.yaml
+
+kubectl delete -f kubernetes/mTLS/005_postgres-db-datamesh.yaml
+
+kubectl delete -f kubernetes/mTLS/006_postgres-svc-datamesh.yaml
+
+kubectl delete -f kubernetes/mTLS/007_fhir-deployment-datamesh.yaml
+
+kubectl delete -f kubernetes/mTLS/008_fhir-server-svc.yaml
+
+kubectl delete -f kubernetes/mTLS/009_fhir-server-vs.yaml
+
+kubectl delete -f kubernetes/mTLS/002_mtls-policy.yaml
+
+kubectl delete -f kubernetes/mTLS/001_datamesh-ns.yaml
+
+istioctl uninstall --purge -y
+
+kubectl delete namespace istio-system
+
+```
