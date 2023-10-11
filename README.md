@@ -2,6 +2,8 @@
 
 The main goal is to guide through a servioce mesh enforcing a zero trust network with authentication policies.
 
+The tutorial was meant to be deployed on a Docker Desktop k8s enviroment. Feel free to open issues if you need help in other platforms
+
 ## Table of contents
 
 - [WORKSHOP INSTRUCUTIONS](#workshop-instrucutions)
