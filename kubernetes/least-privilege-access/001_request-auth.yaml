@@ -1,12 +1,12 @@
-apiVersion: security.istio.io/v1beta1
+apiVersion: security.istio.io/v1
 kind: RequestAuthentication
 metadata:
-  name: fhir-access
+  name: "jwt-fhir"
   namespace: datamesh
 spec:
   selector:
     matchLabels:
       app: fhir-server
   jwtRules:
-  - issuer: https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC
-    jwksUri: https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/certs
+  - issuer: "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC"
+    jwksUri: "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/certs"

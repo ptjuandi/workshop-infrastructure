@@ -1,9 +1,12 @@
-apiVersion: security.istio.io/v1beta1
+apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: fhir-access-patient
+  name: require-jwt
   namespace: datamesh
 spec:
+  selector:
+    matchLabels:
+      app: fhir-server
   action: ALLOW
   rules:
   - from:
@@ -12,32 +15,6 @@ spec:
     to:
     - operation:
         methods: ["GET"]
-        paths: ["/fhir/*"]
     when:
     - key: request.auth.claims[realm_access][roles]
       values: ["Patient"]
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: bookinfo-productpage
-  labels:
-    account: productpage
----
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: fhir-access-patient-db
-  namespace: datamesh
-spec:
-  action: ALLOW
-  rules:
-    - from:
-      - source:
-          principals: ["cluster.local/ns/datamesh/sa/bookinfo-productpage"]
-      to:
-      - operation:
-          methods: ["GET"]
-    # when:
-    # - key: request.auth.claims[realm_access][roles]
-    #   values: ["Patient"]
