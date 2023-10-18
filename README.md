@@ -23,7 +23,9 @@ The tutorial was meant to be deployed on a Docker Desktop k8s enviroment. Feel f
 
 ## Before you start
 
-You must have access to a `kubernetes` cluster and `kubectl`
+You must have access to a `kubernetes` cluster and `kubectl`.
+
+In the [postman](./doc/postman/) folder you can find the Postman collection to test the FHIR endpoints and get the token for the users. It'll be used from the [Securing the Mesh](#securing-the-mesh-mtls) part to the end.
 
 ## Raw deployment FHIR + DB
 
@@ -117,15 +119,15 @@ kubectl delete svc fhir-server
 - Now in order to set up the service mesh you must follow the installation steps in [istio.io](https://istio.io/latest/docs/setup/getting-started/#download) and get Istio.
 
 
-- Once installed istioctl, apply the following Operator and enable the  injects the sidecar to the pods in the _default_ namespace.
+- Once installed istioctl, apply the following command and enable the  injects the sidecar to the pods in the _default_ namespace.
 
 ```shell
-istioctl apply -f kubernetes/mesh-deployment/001_istio-operator.yaml -y
+istioctl install --set profile=demo -y 
 
 kubectl label namespace default istio-injection=enabled --overwrite
 ```
 
-- Then, in order to set up Istio's most usefull benefit, apply the prometheus and kiali observability tools.
+- Then, in order to set up Istio's most usefull benefit, apply the prometheus and kiali observability tools. The "demo" profile installs the istiod components, the ingress and egress gateways
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
@@ -215,7 +217,7 @@ After seting up Istio the same way that it's explained in the previous step and 
 - Install Istio as in the previous steps
 
 ```shell
-istioctl apply -f kubernetes/mesh-deployment/001_istio-operator.yaml -y
+istioctl install --set profile=demo -y 
 ```
 - The first thing is to set up a namespace to ensure the encapsulation of the services with mTLS. It also set the Istio sidecar injection automatically
 ```shell
@@ -371,6 +373,12 @@ curl --location 'https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/op
 
 curl --location --request POST 'http://127.0.0.1/fhir/Patient' \
 --header 'Authorization: Bearer <token>'
+```
+- To test a real Patient load apply. The test patient can be found in [demo_patient.json](./doc/fhir-resources/demo_patient.json).
+```shell
+cd doc/fhir-resources
+
+curl --location --request POST 'http://127.0.0.1/fhir/Patient' \-H "Authorization: Bearer <token>" -H 'Content-Type: application/json'   -d ./doc/fhir-resources/@demo_patient.json 
 ```
 
 

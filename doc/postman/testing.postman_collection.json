@@ -1,0 +1,302 @@
+{
+	"info": {
+		"_postman_id": "960071b9-269d-4ff1-84cc-588d375f7d41",
+		"name": "WORKSHOP-IDEA4RC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26609679"
+	},
+	"item": [
+		{
+			"name": "FHIR",
+			"item": [
+				{
+					"name": "/fhir/Patient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1/fhir/Patient",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"path": [
+								"fhir",
+								"Patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/fhir/Patient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Patient\",\n    \"id\": \"example-patient\",\n    \"identifier\": [\n      {\n        \"system\": \"http://example.org/patient-ids\",\n        \"value\": \"12345\"\n      }\n    ],\n    \"active\": true,\n    \"name\": [\n      {\n        \"family\": \"Smith\",\n        \"given\": [\"John\"]\n      }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1980-01-15\",\n    \"address\": [\n      {\n        \"use\": \"home\",\n        \"line\": [\"123 Main St\"],\n        \"city\": \"Anytown\",\n        \"state\": \"CA\",\n        \"postalCode\": \"12345\"\n      }\n    ],\n    \"telecom\": [\n      {\n        \"system\": \"phone\",\n        \"value\": \"555-555-5555\",\n        \"use\": \"home\"\n      },\n      {\n        \"system\": \"email\",\n        \"value\": \"john.smith@example.com\",\n        \"use\": \"home\"\n      }\n    ]\n  }"
+						},
+						"url": {
+							"raw": "http://127.0.0.1/fhir/Patient",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"path": [
+								"fhir",
+								"Patient"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Keycloak endpoints",
+			"item": [
+				{
+					"name": "kc-issuer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/",
+							"protocol": "https",
+							"host": [
+								"keycloak",
+								"idea",
+								"lst",
+								"tfo",
+								"upm",
+								"es"
+							],
+							"path": [
+								"realms",
+								"IDEA4RC",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "protocol/openid-connect/auth",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/auth",
+							"protocol": "https",
+							"host": [
+								"keycloak",
+								"idea",
+								"lst",
+								"tfo",
+								"upm",
+								"es"
+							],
+							"path": [
+								"realms",
+								"IDEA4RC",
+								"protocol",
+								"openid-connect",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "kc-jwtkuri",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/certs",
+							"protocol": "https",
+							"host": [
+								"keycloak",
+								"idea",
+								"lst",
+								"tfo",
+								"upm",
+								"es"
+							],
+							"path": [
+								"realms",
+								"IDEA4RC",
+								"protocol",
+								"openid-connect",
+								"certs"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user login",
+			"item": [
+				{
+					"name": "bob-Medic auth",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "Istio",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "bob",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "bob1234!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token",
+							"protocol": "https",
+							"host": [
+								"keycloak",
+								"idea",
+								"lst",
+								"tfo",
+								"upm",
+								"es"
+							],
+							"path": [
+								"realms",
+								"IDEA4RC",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "alice-Patient-auth",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "Istio",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alice",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "alice1234!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token",
+							"protocol": "https",
+							"host": [
+								"keycloak",
+								"idea",
+								"lst",
+								"tfo",
+								"upm",
+								"es"
+							],
+							"path": [
+								"realms",
+								"IDEA4RC",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

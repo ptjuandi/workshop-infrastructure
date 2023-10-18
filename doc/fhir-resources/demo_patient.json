@@ -1,0 +1,41 @@
+{
+    "resourceType": "Patient",
+    "id": "example-patient",
+    "identifier": [
+      {
+        "system": "http://example.org/patient-ids",
+        "value": "12345"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "family": "Smith",
+        "given": ["John"]
+      }
+    ],
+    "gender": "male",
+    "birthDate": "1980-01-15",
+    "address": [
+      {
+        "use": "home",
+        "line": ["123 Main St"],
+        "city": "Anytown",
+        "state": "CA",
+        "postalCode": "12345"
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "555-555-5555",
+        "use": "home"
+      },
+      {
+        "system": "email",
+        "value": "john.smith@example.com",
+        "use": "home"
+      }
+    ]
+  }
+  
