@@ -1,12 +1,12 @@
-# WORKSHOP INSTRUCUTIONS
+# WORKSHOP INSTRUCTIONS
 
-The main goal is to guide through a servioce mesh enforcing a zero trust network with authentication policies.
+The main goal is to guide through a service mesh enforcing a zero trust network with authentication policies.
 
-The tutorial was meant to be deployed on a Docker Desktop k8s enviroment. Feel free to open issues if you need help in other platforms
+The tutorial was meant to be deployed on a Docker Desktop k8s enviroment. Feel free to open issues if you need help in other platforms or to improve it.
 
 ## Table of contents
 
-- [WORKSHOP INSTRUCUTIONS](#workshop-instrucutions)
+- [WORKSHOP INSTRUCTIONS](#workshop-instrucutions)
     - [Before you start](#before-you-start)
     - [Raw deployment FHIR + DB](#raw-deployment-fhir--db)
         - [Test](#test)
@@ -23,9 +23,9 @@ The tutorial was meant to be deployed on a Docker Desktop k8s enviroment. Feel f
 
 ## Before you start
 
-You must have access to a `kubernetes` cluster and `kubectl`.
+1. You must have access to a `kubernetes` cluster and `kubectl`.
 
-In the [postman](./doc/postman/) folder you can find the Postman collection to test the FHIR endpoints and get the token for the users. It'll be used from the [Securing the Mesh](#securing-the-mesh-mtls) part to the end.
+2. Postman is recomended. In the [postman](./doc/postman/) folder you can find the Postman collection to test the FHIR endpoints and get the token for the users. It'll be used from the [Securing the Mesh](#securing-the-mesh-mtls) part to the end.
 
 ## Raw deployment FHIR + DB
 
@@ -38,7 +38,7 @@ In orther to deploy the raw enviroment without using Istio you must follow the n
 
 echo -n "SuperSecurePass1234!" | base64 
 ```
-- Then apply the following yaml's
+- Then apply the following yaml files
 ```shell
 kubectl apply -f kubernetes/raw-deployment/001_postgress-secret.yaml
 
@@ -134,7 +134,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samp
 
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
 ```
-- Next step is to set up the gateway throug the istio ingress to manage the conexions to the services in the mesh
+- Next step is to set up the gateway through the istio ingress to manage the conexions to the services in the mesh
 
 ```shell
 kubectl apply -f kubernetes/mesh-deployment/002_gateway.yaml
@@ -154,7 +154,7 @@ kubectl apply -f kubernetes/raw-deployment/003_postgres-svc.yaml
 ```shell
 kubectl apply -f kubernetes/raw-deployment/004_fhir-deployment.yaml
 ```
-- Some additional steps must be applied for Istio gateway to route the traffic through.For creating a svc for the FHIR server and applying the virtual service:
+- Some additional steps must be applied for Istio gateway to route the traffic through. For creating a svc for the FHIR server and applying the virtual service:
 
 ```shell
 kubectl apply -f kubernetes/mesh-deployment/003_fhir-server-svc.yaml
@@ -211,8 +211,9 @@ kubectl delete namespace istio-system
 
 ## Securing the Mesh (mTLS)
 
-For the next step we'll implement the secure comunication between services in the mesh using mTLS
-After seting up Istio the same way that it's explained in the previous step and activating the proxy injection:
+For the next step we'll force the secure comunication between services in the mesh using mTLS.
+
+After seting up Istio the same way that was explained in the previous step and activating the proxy injection:
 
 - Install Istio as in the previous steps
 
@@ -260,7 +261,7 @@ By applying the "STRICT" tag in the Istio [PeerAuthentication](./kubernetes/mTLS
 
 ![Kiali mTLS](./doc/img/kiali-mtls.png)
 
-Now we'll prove that, enforcinf the STRICT mTLS mode, no other service outside the namespace or inside withouth a sidecar injection is able to comunicate with the FHIR service or it's database.
+Now we'll prove that, enforcing the STRICT mTLS mode, no other service outside the namespace or inside withouth a sidecar injection is able to comunicate with the FHIR service or it's database.
 
 - First we apply the sleep pod in the default namespace 
 ```shell
