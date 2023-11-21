@@ -91,7 +91,8 @@ kubectl expose deployment/fhir-server --type="NodePort" --port 8080
 ```shell 
 export FHIR_PORT="$(kubectl get services/fhir-server -o go-template='{{(index .spec.ports 0).nodePort}}')"
 ```
-- Then we can check if doing a curl to the Patient endpoints returns __200__ http code
+- Then we can check if doing a curl to the Patient endpoints returns __200__ http code. If you're using something different than Docker Desktop k8s enviroment, you may encounter that "localhost" is not the ip to access the cluster.
+
 ```shell
 curl "http://localhost:$FHIR_PORT/fhir/Patient" -X GET -sS -o /dev/null -w "%{http_code}\n"
 ```
@@ -127,12 +128,20 @@ istioctl install --set profile=demo -y
 kubectl label namespace default istio-injection=enabled --overwrite
 ```
 
-- Then, in order to set up Istio's most usefull benefit, apply the prometheus and kiali observability tools. The "demo" profile installs the istiod components, the ingress and egress gateways
+- Then, in order to set up Istio's most usefull benefit, apply the prometheus and kiali observability tools. The "demo" profile installs the istiod components, the ingress and egress gateways. This only works for Istio 1.19
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+```
+
+In order to match new Istio releases, instead of applying the raw links, get into the Istio installation folder and try:
+
+```shell
+kubectl apply -f ./samples/addons/prometheus.yaml
+
+kubectl apply -f ./samples/addons/kiali.yaml
 ```
 - Next step is to set up the gateway through the istio ingress to manage the conexions to the services in the mesh
 
@@ -249,12 +258,20 @@ kubectl apply -f kubernetes/mTLS/009_fhir-server-vs.yaml
 
 ### Testing the mTLS mesh
 
-- For testing purposes we can install Prometheus and Kiali and check the mTLS connections between services
+- For testing purposes we can install Prometheus and Kiali and check the mTLS connections between services. This only works for Istio 1.19
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml
+```
+
+In order to match new Istio releases, instead of applying the raw links, get into the Istio installation folder and try:
+
+```shell
+kubectl apply -f ./samples/addons/prometheus.yaml
+
+kubectl apply -f ./samples/addons/kiali.yaml
 ```
 
 By applying the "STRICT" tag in the Istio [PeerAuthentication](./kubernetes/mTLS/002_mtls-policy.yaml) we don't allow any traffic inside the mesh that is not encrypted and we enable mTLS between services as we can see in the Kiali
@@ -350,7 +367,7 @@ In order to test the users trying to access the fhir endpoint on specific HTTP m
 ```shell
     curl --location 'https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token' \
          --header 'Content-Type: application/x-www-form-urlencoded' \
-         --data-urlencode 'client_id=Istio' \
+         --data-urlencode 'client_id=idea' \
          --data-urlencode 'grant_type=password' \
          --data-urlencode 'username=alice' \
          --data-urlencode 'password=alice1234!'
@@ -367,7 +384,7 @@ curl --location 'http://127.0.0.1/fhir/Patient' \
 ```shell
 curl --location 'https://keycloak.idea.lst.tfo.upm.es/realms/IDEA4RC/protocol/openid-connect/token' \
          --header 'Content-Type: application/x-www-form-urlencoded' \
-         --data-urlencode 'client_id=Istio' \
+         --data-urlencode 'client_id=idea' \
          --data-urlencode 'grant_type=password' \
          --data-urlencode 'username=bob' \
          --data-urlencode 'password=bob1234!'
