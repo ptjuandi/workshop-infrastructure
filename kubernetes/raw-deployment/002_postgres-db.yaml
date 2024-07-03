@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres-db
-          image: postgres:latest
+          image: smartchartsuite/omop-cdm-54-postgres:latest
           ports:
             - containerPort: 5432
           env:
